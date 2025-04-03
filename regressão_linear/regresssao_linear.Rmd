@@ -1,0 +1,220 @@
+---
+title: "Mínimos Quadrados Ordinários (MQO)"
+author: Vinicius Limeira 
+abstract: "Uma introdução ao método de mínimos quadrados ordinários."
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+    includes:
+      #in_header: header.tex
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
+bibliography: 'references.bib'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+
+```
+
+\newpage
+
+# Introdução
+
+Modelos de regressão linear estimados por meio do método de mínimos quadrados ordinários constituem a pedra angular da econometria. Dessa forma, para um curso que se propõe introdutório, devemos partir daí. Com esse intuito, vamos nos basear em @verbeek de forma a ressaltar o método de MQO em termos algébricos.
+
+Suponha, com efeito, que você tenha uma amostra com $N$ observações de salários individuais e algumas características de fundo. Nosso objetivo principal é relacionar os salários dessa amostra a essas características, conforme vimos na seção anterior. Em termos um pouco mais formais, vamos chamar os salários de $y$ e as $K-1$ características por $x_{2},...,x_{k}$. Nesses termos, podemos nos perguntar qual a combinação linear de $x_{2},...,x_{k}$ e uma constante dá uma boa aproximação de $y$. Para responder essa pergunta, primeiro, considere uma combinação linear arbitrária, incluindo a constante, que pode ser escrita como \begin{align} \tilde{\beta}_{1} + \tilde{\beta}_{2}x_{2} + ... + \tilde{\beta}_{k}x_{k} \label{equation04} \end{align} Onde, $\tilde{\beta}_{1},...,\tilde{\beta}_{k}$ são constantes a serem escolhidas, de modo que a diferença entre $y_{i}$ e essa combinação linear pode ser dada por:\footnote{Observe que indexamos as observações por $i$, dado $i = 1,...,N$.} \begin{align} y_{i} - [\tilde{\beta}_{1} + \tilde{\beta}_{2}x_{i2} + ... + \tilde{\beta}_{k}x_{ik}] \label{equation05} \end{align} Ou, \begin{align} y_{i} - x_{i}^{'} \tilde{\beta} \label{equation06} \end{align} Nesses termos, devemos escolher valores para $\tilde{\beta}_{1},..., \tilde{\beta}_{k}$ de modo que a diferença dada por \ref{equation06} seja a menor possível.\footnote{Nessa apostila, vamos seguir a convenção de que que $x_{i}$ é o vetor coluna $\begin{pmatrix} 1 \\ x_{i2} \\ ... \\ x_{ik} \end{pmatrix}$ e $x_{i}^{'}$ é o transposto de $x_{i}$, isto é, um vetor-linha.} Isto é, devemos determinar $\tilde{\beta}$ de modo a minimizar a seguinte função objetivo \begin{equation} S(\tilde{\beta}) \equiv \sum_{i=1}^{N} (y_{i} - x_{i}^{'} \tilde{\beta})^2 \label{equation07} \end{equation} Em resumo, minimizar a soma dos erros da aproximação ao quadrado. Esse método é, precisamente, o que chamamos de \textbf{mínimos quadrados ordinários}. Para resolver esse problema de minimização, consideramos a condição de primeira ordem obtida pela derivação de $S(\tilde{\beta})$ com respeito ao vetor $\tilde{\beta}$. Isto é, \begin{equation} -2 \sum_{i=1}^{N} x_{i}(y_{i} - x_{i}^{'} \tilde{\beta}) = 0 \label{equation08} \end{equation} Ou \begin{equation} (\sum_{i=1}^{N} x_{i}x_{i}^{'})\tilde{\beta} = \sum_{i=1}^{N} x_{i}y_{i} \label{equation09} \end{equation} A solução, assim, para o problema de minimização pode ser dado por: \begin{equation} b= (\sum_{i=1}^{N} x_{i}x_{i}^{'})^{-1} \sum_{i=1}^{N} x_{i}y_{i} \label{equation10} \end{equation} Tomando a condição de segunda ordem, é fácil verificar que $b$, de fato, corresponde ao mínimo de \ref{equation07}. A combinação linear resultante de $x_{i}$ é então dada por \begin{equation} \widehat{y}_i = x_{i}^{'} b \label{equation11} \end{equation} que é a melhor aproximação linear de $y$ dado $x_{2},...,x_{k}$ e uma constante. Ou seja, a soma das diferenças ao quadrado entre os valores observados de $y_{i}$ e os valores \emph{estimados} $\widehat{y}_{i}$ será mínima para a solução $b$. 
+
+Na derivação da aproximação linear, nós não utilizamos nenhum conceito estatístico ou econômico, diga-se. O que fizemos foi apenas uma \emph{manipulação algébrica}, não relacionada a forma como os dados foram gerados. Ou seja, dado um conjunto de variáveis, podemos sempre determinar a melhor aproximação linear de uma variável  usando as demais variáveis.\footnote{A única hipótese que fizemos aqui é que a matriz $K x K$ $\sum_{i=1}^{N} x_{i}x_{i}^{'}$ é inversível. Isso é chamado, em geral, de \textbf{premissa de não existência de multicolinearidade}.} 
+
+Definindo, assim, um \textbf{resíduo} $e_{i}$ como a diferença entre os valores observados e aqueles aproximados, $e_{i} = y_{i} - \widehat{y} = y_{i} - X_{i}b$, nós podemos decompor os valores observados como \begin{equation} y_{i} = \widehat{y} + e_{i} = x_{i}^{'}b + e_{i} \label{equation12} \end{equation} Isso nos permite escrever o valor mínimo para a função objetivo \ref{equation07} como \begin{equation} S(b) = \sum_{i=1}^{N} e_{i}^{2} \label{equation13} \end{equation} O que pode ser descrito como o \emph{somatório dos resíduos ao quadrado}. Com efeito, pode ser mostrado que o valor aproximado $X_{i}b$ e o resíduo $e_{i}$ satisfazem certas propriedades por construção. Por exemplo, se nós reescrevermos \ref{equation08}, substituindo a solução $b$, nós obtemos \begin{equation} \sum_{i=1}^{N} x_{i}(y_{i} - x_{i}^{'} \tilde{\beta}) = \sum_{i=1}^{N} x_{i}e_{i} = 0 \label{equation14} \end{equation} Isso significa que o vetor $\varepsilon = (e_{1}, ..., e_{N})$ é ortogonal para cada vetor de observações nas $x-variáveis$.\footnote{Dois vetores $x$ e $y$ são ditos ortogonais se ${x}'{y} = 0$, assim $\sum_{i} x_{i}y_{i} = 0$.} 
+
+
+
+
+# Pacotes utilizados nessa seção
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+library(wooldridge)
+library(ggplot2)
+library(stargazer)
+library(foreign)
+```
+
+# Regressão linear simples
+
+Para o caso onde $K=2$, nós temos apenas um regressor e uma constante. Nesse caso, as observações $(y_i, x_i)$ podem ser desenhadas em um gráfico de duas dimensões. A melhor aproximação de $y$ por $x$ e uma constante é obtido pela minimização da soma dos resíduos ao quadrado, o que no caso de duas variáveis é igual à distância vertical entre uma observação e o valor ajustado. Todos os valores ajustados (\emph{fitted values}) estão em uma linha reta, chamada de \textbf{reta de regressão}. 
+
+Dado que a matrix $2 \times 2$ pode ser invertida analiticamente, nós podemos derivar soluções para $b_1$ e $b_2$ nesse caso especial a partir da expressão geral para $b$ dada por \ref{equation10}. De forma equivalente, nós podemos minimizar a soma dos resíduos ao quatro com respeito aos parâmetros desconhecidos de forma direta. Assim, teremos: \begin{align} S(\tilde{\beta_1}, \tilde{\beta_2}) = \sum_{i=1}^{N} (y_i - \tilde{\beta_1} - \tilde{\beta_2} x_i)^2 \label{equation15} \end{align} Os elementos básicos na derivação das soluções do MQO serão as condições de primeira ordem \begin{align} \frac{\partial S(\tilde{\beta_1}, \tilde{\beta_2})}{\partial \tilde{\beta_1}} =& -2 \sum_{i=1}^{N} (y_i - \tilde{\beta_1} - \tilde{\beta_2} x_i) = 0 \label{equation16} \\  \frac{\partial S(\tilde{\beta_1}, \tilde{\beta_2})}{\partial \tilde{\beta_2}} =& -2 \sum_{i=1}^{N} x_i (y_i - \tilde{\beta_1} - \tilde{\beta_2} x_i) = 0 \label{equation17} \end{align}
+
+## Salários versus Experiência no emprego
+
+Para ilustrar a \textbf{reta de regressão}, vamos pegar aquele mesmo conjunto de dados da seção anterior e tomar o modelo representado por \begin{align} \text{Salário}_i = \beta_0 + \text{Experiência}_i + \varepsilon_i \nonumber \end{align} 
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+data(package = "wooldridge")
+data(wage1)
+
+
+
+
+```
+
+Uma vez carregado esse conjunto de dados, podemos plotar a reta de regressão entre \texttt{salários} e \texttt{experiência no emprego} como abaixo. 
+
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+ggplot2::ggplot(wage1, aes(x=educ, y=wage))+
+  geom_point(shape=1)+
+  geom_smooth(method = lm)+
+  xlab('Educação')+
+  ylab('Salários')+
+  ggtitle('Salários vs Educação')
+  
+
+
+
+
+```
+Observe que, de fato, há uma correlação positiva entre Educação e
+Salários. Será que nossa hipótese está no caminho correto para
+não ser rejeitado pela evidência empírica? Para que consigamos
+encontrar uma evidência de que a Educação de fato tem efeito positivo sobre os Salários, precisaremos estimar o parâmetro $\beta_1$.
+
+O trabalho, entretanto, não acaba aí. É preciso verificar se o valor
+obtido para o parâmetro é estatisticamente significativo. Isso será
+feito através de testes de hipóteses. Por fim, podemos usar nosso
+modelo para fins de previsão ou mesmo para implementação de
+alguma política pública
+
+## Modelo Para a Relação anterior 
+
+Para ilustrar a reta de regressão, vamos pegar aquele mesmo
+conjunto de dados da seção anterior e tomar o modelo representado
+por: 
+
+\begin{align} \text{Salário}_i = \beta_0 + \text{Experiência}_i + \varepsilon_i \nonumber \end{align} 
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+wage1 <- read.dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+
+
+reta = lm(wage~exper, data = wage1)
+
+```
+
+A linha é o que chamamos de reta de regressão, enquanto a
+distância entre as observações e essa reta são justamente os
+resíduos. A expressão da reta de regressão é dada, então, por
+$Salários = 5.37 + 0.03 Experiência$.
+
+
+## Aproximação Linear 
+
+Vamos ilustrar, agora, o que queremos dizer com \emph{aproximação linear}. Considere o conjunto de dados que importamos acima e regrida os valores dos \texttt{salários individuais} contra uma \textbf{variável dummy} que associa 1 para o gênero feminimo e 0 para o gênero masculino. Isso é feito abaixo.
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+reg <- lm(wage1$wage ~ wage1$female)
+stargazer(reg, title = 'Salários contra dummy de gênero',
+          header = FALSE)
+
+```
+Ao considerar apenas uma dummy de gênero, podemos dizer que a melhor aproximação para ossalários das mulheres seria $4.59$. Enquanto para os homens, seria $7.1$.
+
+## O modelo de Regressão Linear 
+
+Usualmente, nós podemos querer mais do que simplesmente encontrar a melhor aproximação linear de uma variável dado um conjunto de outras variáveis. \textcolor{red}{Às vezes podemos estar interessados em relações mais gerais do que aquelas proporcionadas pela amostra disponível}. Às vezes podemos estar interessados em verificar o efeito de uma mudança em alguma das nossas variáveis. Em outras palavras, podemos querer fazer afirmações sobre coisas que ainda não observamos efetivamente. Para isso, nós precisamos que as relações encontradas reflitam mais do que apenas uma coincidência histórica e sim uma relação fundamental.^[Para maiores detalhes sobre essa seção, ver @verbeek.]
+
+Para fazer isso, devemos assumir que existe uma relação geral que é válida para todas as possíveis observações de uma bem definida população. Restringindo para o caso de relações lineares, nós especificamos um \textbf{modelo estatístico} do tipo:\begin{align} y_{i} = \beta_{1} + \beta_{2}x_{i2} + ... + \beta_{K}x_{iK} + \varepsilon_{i} \label{equation18} \end{align} ou \begin{align} y_{i} = x_{i}^{'}\beta + \varepsilon_{i} \label{equation19} \end{align} onde $y_{i}$ e $x_{i}$ são variáveis observáveis e $\varepsilon_{i}$ é não observável e refere-se a um \textbf{termo de erro}. Os elementos em $\beta$ são \textbf{parâmetros populacionais} não conhecidos. A igualdade em \ref{equation19} é supostamente válida para qualquer possível observação, ainda que tenhamos acesso a uma amostra com $N$ observações. Nós, aliás, consideráremos essa amostra como uma realização de todas as potenciais amostras de tamanho $N$ que poderíamos tomar da mesma população. Nesse caso, nós podemos considerar $y_{i}$ e $\varepsilon_{i}$ como variáveis aleatórias.\footnote{Em outras palavras, cada observação corresponderá a uma realização dessas variáveis aleatórias.} Nós podemos, a propósito, representar a equação \ref{equation19} em notação matricial, como abaixo:\begin{equation} y = X\beta + \varepsilon \label{equation20} \end{equation} onde $X$ é uma matriz $N \times K$ e $\beta$ é uma matriz $K \times 1$. O \textbf{processo de amostragem}, por suposto, descreve como a amostra é tomada da população e, como resultado, determina a aleatoriedade dessa amostra. Numa primeira vista, as $x_{i}$ variáveis são consideradas fixas ou \emph{não estocásticas}, o que significa que toda nova amostra terá a mesma matriz $X$. Nesse caso, consideramos $x_{i}$ como sendo \textbf{deterministíca}. Desse modo, uma nova amostra apenas implica em novos valores para $\varepsilon_{i}$ e, portanto, para $y_{i}$.  
+
+Chamamos atenção, a propósito, que o único caso relevante onde $x_{i}s$ são realmente determinísticas é em laboratório, onde o pesquisador pode determinar as condições de um dado experimento (ex. temperatura ou pressão). Em economia nós teremos que lidar, de maneira geral, com dados não experimentais. Apesar disso, é conveniente e em casos particulares apropriado a determinado contexto econômico agir como se as $x_{i}$ variáveis fossem determinísticas. Nesse caso, teremos que fazer algumas suposições sobre a distribuição de $\varepsilon_{i}$. Uma conveniente corresponde à \textbf{amostragem aleatória} onde cada erro $\varepsilon_{i}$ é um desenho aleatório tomado da distribuição da população, independente de outros termos de erro. 
+
+Em um segundo olhar, uma nova amostra implica em novos valores tanto para $x_{i}$ quanto para $\varepsilon_{i}$, assim a cada tempo um novo conjunto com $N$ observações para $(y_{i}, x_{i})$ é desenhado. Nesse caso, amostragem aleatória signfica que cada conjunto $(y_{i}, x_{i})$ é um desenho aleatório da distribuição da população. Nesse contexto, será importante fazer suposições sobre a distribuição conjunta de $x_{i}$ e $\varepsilon_{i}$, em particular em respeito à extensão a que a distribuição de $\varepsilon_{i}$ é deixada a depender sobre $X$. 
+A ideia de uma amostra (aleatória) é mais facilmente entendida no contexto de corte transversal, onde o interesse reside em uma população grande e fixa, por exemplo, todas as famílias brasileiras em setembro de 2016 ou todas as ações listadas na BOVESPA em um dado momento. No contexto de séries temporais, diferentes observações fazem referência a diferentes períodos do tempo, e não faz sentido assumir que nós temos uma amostra aleatória de períodos do tempo. Ao invés disso, nós tomaremos a visão de que a amostra que temos é apenas uma realização do que poderia ocorrer em um dado intervalo de tempo e a aleatoriedade se refere a estados alternativos do mundo. Nesse caso, teremos de fazer algumas suposições sobre como os dados foram gerados (ao invés de como os dados foram \emph{amostrados}).
+
+É importante perceber que sem nenhuma restrição adicional, o modelo \emph{estatístico} proposto em \ref{equation19} é uma tautologia: para cada valor de $\beta$ pode-se definir um conjunto de $\varepsilon_{i}s$ tal que \ref{equation19} se mantém exata para cada observação. Nós, assim, precisamos impor algumas suposições para dar ao modelo um significado. Uma suposição comum é que o valor esperado de $\varepsilon_{i}$ dadas todas as variáveis explanatórias em $x_{i}$ será zero, i.e., $E[\varepsilon_{i}|x_{i}]=0$. Usualmente, nos referimos a essa suposição dizendo que as variáveis explanatórias são \textbf{exógenas}. Sob essa suposição, temos que \begin{equation} E[y_{i}|x_{i}] = x_{i}^{'}\beta \label{equation21} \end{equation} desse modo, a linha de regressão $x_{i}^{'}\beta$ descreve a esperança condicional de $y_{i}$, dados os valores de $x_{i}$. \textbf{Os coeficientes $\beta_{k}$ medem como o valor esperado de $y_{i}$ é afetado se o valor de $x_{ik}$ mudar, mantendo os demais elementos em $x_{i}$ constantes}.\footnote{Os economistas costumam se referir a isso como \textbf{ceteris paribus}.} A teoria econômica, contudo, frequentemente sugere que o modelo contido em \ref{equation19} descreve uma relação causal, no qual os $\beta$ coeficientes medem a mudança em $y_{i}$ \emph{causadas} por a ceteris paribus mudança em $x_{ik}$. Nesses casos, $\varepsilon_{i}$ tem uma interpretação econômica (e não apenas estatística) e impondo que ele não é correlacionado com $x_{i}$, como nós fazemos ao impor $E[\varepsilon_{i}|x_{i}]=0$, pode não ser justificado. Pela razão de em muitas aplicações podermos argumentar que variáveis não observadas presentes no termo de erro estarem relacionadas às variáveis $x_{i}$, nós devemos ter cuidado ao interpretar os coeficientes da regressão como medidas de efeito causal.\footnote{Voltaremos a esse problema quando estivermos tratando de \emph{endogeneidade}.}
+
+Agora que nossos $\beta$ coeficientes possuem um significado, nós podemos tentar usar a amostra $(y_{i}, x_{i})$, $i = 1,...,N$ para dizer alguma coisa sobre eles. A regra que diz como uma dada amostra é traduzida em um valor aproximado para $\beta$ é referida como um \textbf{estimador}. O resultado para uma dada amostra é chamado uma \textbf{estimativa}. O \emph{estimador} é um vetor de variáveis aleatórias porque a amostra pode mudar. A \emph{estimativa}, por sua vez, é um vetor de números. O mais amplamente estimador usado em econometria é o estimador de \textbf{Mínimos Quadrados Ordinários} ou simplesmente estimador de MQO. Isso é somente a regra de mínimos quadrados ordinários descrita na seção anterior aplicada a uma amostra disponível. O estimador de MQO para $\beta$ é dado por \begin{equation} b= \left ( \sum_{i=1}^{N} x_{i}x_{i}^{'}\right )^{-1} \sum_{i=1}^{N} x_{i}y_{i} \end{equation} Dado que temos assumido o modelo descrito por \ref{equation19} como verdadeiro, combinado com um esquema de amostragem, $b$ é agora um vetor de variáveis aleatórias. Nosso interesse se posiciona no verdadeiro vetor de parâmetro $\beta$ não conhecido, e $b$ é considerado uma aproximação a ele. Enquanto uma dada amostra somente produz uma única estimativa, nós avaliamos a qualidade dela através das propriedades do estimador subjacente. O estimador $b$ tem uma distribuição de amostragem porque esse valor depende da amostra que é escolhida (aleatoriamente) da população. 
+
+É extremamente importante entender a diferença entre o estimador $b$ e o verdadeiro coeficiente $\beta$ da população. O primeiro é um vetor de variáveis aleatórias, o resultado disso depende da amostra que é empregada (e, em termos gerais, do método empregado). O segundo é um conjunto fixo de números desconhecidos, caracterizando o modelo populacional descrito em \ref{equation19}. Da mesma forma, a distinção entre o termo de erro $\varepsilon_{i}$ e os resíduos $e_{i}$ é importante. Termos de erro são não observáveis e suposições distribucionais sobre eles são necessárias para derivar as propriedades de amostragem dos estimadores para $\beta$. A próxima seção trata desse aspecto. Os resíduos, por sua vez, são obtidos após a estimação, e seus valores dependerão do valor estimado para $\beta$ e, por conseguinte, dependerão da amostra e do método de estimação. 
+
+As propriedades do termo de erro $\varepsilon_{i}$ e dos resíduos $e_{i}$ não são as mesmas e ocasionalmente são bastante diferente. Por exemplo, \begin{equation} \sum_{i=1}^{N} x_{i}(y_{i} - x_{i}^{'} \tilde{\beta}) = \sum_{i=1}^{N} x_{i}e_{i} = 0 \label{equation14} \end{equation} é tipicamente não satisfeita quando os resíduos são substituídos pelos termos de erro.\footnote{Ao longo do nosso curso, usaremos essa notação: $\varepsilon_{i}$ refere-se ao termo de erro e $e_{i}$ aos resíduos.}
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+```{r, echo=T, eval=T, results='asis', fig.width=8, fig.height=4, fig.align='center', out.width="1\\linewidth", warning=FALSE, message=FALSE, size='small'}
+
+
+```
+
+# Referências
